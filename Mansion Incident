@@ -1,0 +1,214 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- Direct Discord image logo URL
+local logoUrl = "https://cdn.discordapp.com/attachments/1453659040658751742/1556984559759794276/Untitled25_20260211142144.png?backend=b2&ex=6ac6265e&is=6ac4d4de&hm=575ad8792455bbec1ffd673029bbdd2a9eb89b9f14f91152b635694d4b75f6f3&"
+
+-- Automatically download & save logo to workspace if not saved yet
+if not isfile("mmp_logo.png") then
+    writefile("mmp_logo.png", game:HttpGet(logoUrl))
+end
+
+local Window = Rayfield:CreateWindow({
+    Name = "Residence Massacre Mansion Incident | MMP",
+    Icon = getcustomasset("mmp_logo.png"),
+    LoadingTitle = "Residence Massacre | Mansion Incident",
+    LoadingSubtitle = "By MMP",
+    Theme = "Default",
+    DisableRayfieldPrompts = true,
+    DisableBuildWarnings = true,
+
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "RMM_SAVING"
+    },
+
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+
+    KeySystem = false
+})
+
+-- Services & Variables
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+
+local localPlayer = Players.LocalPlayer
+
+local function getCharacter()
+    return localPlayer.Character or localPlayer.CharacterAdded:Wait()
+end
+
+-- Tabs
+local MainTab = Window:CreateTab("Main", "home")
+local LocalPlayerTab = Window:CreateTab("Local Player", "user")
+
+---------------------------------------------------------
+-- MAIN TAB
+---------------------------------------------------------
+MainTab:CreateSection("Mansion Incident Automations")
+
+local kidDetectorConn
+local isKidDetected = false
+
+local KidDetectorToggle = MainTab:CreateToggle({
+    Name = "Kid Detector",
+    CurrentValue = false,
+    Flag = "KidDetectorToggle",
+    Callback = function(Value)
+        if Value then
+            kidDetectorConn = RunService.Heartbeat:Connect(function()
+                local kidExists = workspace:FindFirstChild("Kid") ~= nil
+                if kidExists and not isKidDetected then
+                    Rayfield:Notify({
+                        Title = "Kid Detector Notification",
+                        Content = "A Kid appeared in the door!",
+                        Duration = 6,
+                        Image = "baby"
+                    })
+                end
+                isKidDetected = kidExists
+            end)
+        else
+            if kidDetectorConn then
+                kidDetectorConn:Disconnect()
+                kidDetectorConn = nil
+            end
+            isKidDetected = false
+        end
+    end,
+})
+
+local FillCandyBowlButton = MainTab:CreateButton({
+    Name = "Fill Candy Bowl",
+    Callback = function()
+        pcall(function()
+            if workspace:FindFirstChild("FakeCandyBag") and workspace.FakeCandyBag:FindFirstChild("ClickDetector") then
+                fireclickdetector(workspace.FakeCandyBag.ClickDetector)
+            end
+        end)
+        pcall(function()
+            if workspace:FindFirstChild("CandyBowl") and workspace.CandyBowl:FindFirstChild("ClickDetector") then
+                fireclickdetector(workspace.CandyBowl.ClickDetector)
+            end
+        end)
+
+        task.wait(2.5)
+
+        pcall(function()
+            if workspace:FindFirstChild("CandyBowl") and workspace.CandyBowl:FindFirstChild("ClickDetector") then
+                fireclickdetector(workspace.CandyBowl.ClickDetector)
+            end
+        end)
+        pcall(function()
+            if workspace:FindFirstChild("FakeCandyBag") and workspace.FakeCandyBag:FindFirstChild("ClickDetector") then
+                fireclickdetector(workspace.FakeCandyBag.ClickDetector)
+            end
+        end)
+
+        task.wait(1.6)
+
+        pcall(function()
+            if workspace:FindFirstChild("CandyBowl") and workspace.CandyBowl:FindFirstChild("ClickDetector") then
+                fireclickdetector(workspace.CandyBowl.ClickDetector)
+            end
+        end)
+    end,
+})
+
+MainTab:CreateSection("Player Modifiers")
+
+local InfStaminaButton = MainTab:CreateButton({
+    Name = "Infinite Stamina",
+    Callback = function()
+        local char = getCharacter()
+        local sprint = char:WaitForChild("Sprint", 5)
+        if sprint then
+            if sprint:FindFirstChild("Overdrive") then
+                sprint.Overdrive.Value = math.huge
+            end
+            if sprint:FindFirstChild("Stam") then
+                sprint.Stam.Value = math.huge
+            end
+            Rayfield:Notify({
+                Title = "Notification",
+                Content = "Infinite Stamina Applied!",
+                Duration = 4,
+                Image = "chevrons-right"
+            })
+        end
+    end,
+})
+
+local RemoveDangerButton = MainTab:CreateButton({
+    Name = "Remove Danger",
+    Callback = function()
+        local char = localPlayer.Character
+        if char then
+            local danger = char:FindFirstChild("Danger")
+            if danger then
+                danger:Destroy()
+                Rayfield:Notify({
+                    Title = "Notification",
+                    Content = "Danger removed!",
+                    Duration = 4,
+                    Image = "chevrons-right"
+                })
+            end
+        end
+    end,
+})
+
+MainTab:CreateSection("Credits")
+MainTab:CreateLabel("Script made by MMP (@MMP_Main)")
+
+---------------------------------------------------------
+-- LOCAL PLAYER TAB
+---------------------------------------------------------
+LocalPlayerTab:CreateSection("Visuals & Utilities")
+
+local CameraModeButton = LocalPlayerTab:CreateButton({
+    Name = "Change Camera Mode",
+    Callback = function()
+        if localPlayer.CameraMode == Enum.CameraMode.LockFirstPerson then
+            localPlayer.CameraMode = Enum.CameraMode.Classic
+            localPlayer.CameraMinZoomDistance = 0.5
+            localPlayer.CameraMaxZoomDistance = 400
+        else
+            localPlayer.CameraMode = Enum.CameraMode.LockFirstPerson
+        end
+    end,
+})
+
+local FullbrightToggle = LocalPlayerTab:CreateToggle({
+    Name = "Fullbright",
+    CurrentValue = false,
+    Flag = "FullbrightToggle",
+    Callback = function(Value)
+        getgenv().loopfb = Value
+        if Value then
+            getgenv().fbthread = task.spawn(function()
+                while getgenv().loopfb do
+                    Lighting.Brightness = 1.5
+                    Lighting.ClockTime = 14
+                    Lighting.FogEnd = 100000
+                    Lighting.GlobalShadows = false
+                    Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+                    task.wait()
+                end
+            end)
+        else
+            if getgenv().fbthread then
+                task.cancel(getgenv().fbthread)
+                getgenv().fbthread = nil
+            end
+            Lighting.GlobalShadows = true
+        end
+    end,
+})
+
+Rayfield:LoadConfiguration()
