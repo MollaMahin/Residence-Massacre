@@ -13,7 +13,8 @@ local Window = Rayfield:CreateWindow({
     Icon = getcustomasset("mmp_logo.png"),
     LoadingTitle = "Residence Massacre | Night 1 & Endless",
     LoadingSubtitle = "By MMP",
-    Theme = "DarkBlue",
+    ShowText = "MMP",
+    Theme = "Defualt",
     DisableRayfieldPrompts = true,
     DisableBuildWarnings = true,
 
