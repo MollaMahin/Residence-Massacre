@@ -1,0 +1,527 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- Direct Discord image logo URL
+local logoUrl = "https://cdn.discordapp.com/attachments/1453659040658751742/1556984559759794276/Untitled25_20260211142144.png?backend=b2&ex=6ac6265e&is=6ac4d4de&hm=575ad8792455bbec1ffd673029bbdd2a9eb89b9f14f91152b635694d4b75f6f3&"
+
+-- Automatically download & save the logo to workspace if not saved yet
+if not isfile("mmp_logo.png") then
+    writefile("mmp_logo.png", game:HttpGet(logoUrl))
+end
+
+local Window = Rayfield:CreateWindow({
+    Name = "Residence Massacre Night 1 & Endless | MMP",
+    Icon = getcustomasset("mmp_logo.png"),
+    LoadingTitle = "Residence Massacre | Night 1 & Endless",
+    LoadingSubtitle = "By MMP",
+    Theme = "DarkBlue",
+    DisableRayfieldPrompts = true,
+    DisableBuildWarnings = true,
+
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "SAVING"
+    },
+
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+
+    KeySystem = false
+})
+
+-- Services & Variables
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
+
+local localPlayer = Players.LocalPlayer
+
+local function getCharacter()
+    return localPlayer.Character or localPlayer.CharacterAdded:Wait()
+end
+
+-- Tabs
+local MainTab = Window:CreateTab("Main", "home")
+local GeneratorTab = Window:CreateTab("Generator", "fuel")
+local LocalPlayerTab = Window:CreateTab("Local Player", "user")
+local SafeSpotTab = Window:CreateTab("Safe Spot", "map-pin")
+
+-- Original Stats Storage
+local originalStats = {}
+
+local function updateOriginalStats(char)
+    local sprint = char:WaitForChild("Sprint", 5)
+    local breath = char:WaitForChild("Breath", 5)
+    if sprint and breath then
+        originalStats.stam = {
+            max = sprint.Stam:GetAttribute("Max"),
+            val = sprint.Stam.Value
+        }
+        originalStats.breath = {
+            max = breath:GetAttribute("Max"),
+            val = breath.Value
+        }
+        originalStats.overdrive = sprint.Overdrive.Value
+    end
+end
+
+if localPlayer.Character then
+    updateOriginalStats(localPlayer.Character)
+end
+localPlayer.CharacterAdded:Connect(updateOriginalStats)
+
+---------------------------------------------------------
+-- MAIN TAB
+---------------------------------------------------------
+MainTab:CreateSection("Main Controls")
+
+local InfiniteBreathToggle = MainTab:CreateToggle({
+    Name = "Infinite Breath",
+    CurrentValue = false,
+    Flag = "InfiniteBreath",
+    Callback = function(Value)
+        local char = getCharacter()
+        local breath = char:FindFirstChild("Breath")
+        if breath then
+            if Value then
+                breath:SetAttribute("Max", math.huge)
+                breath.Value = math.huge
+            else
+                if originalStats.breath then
+                    breath:SetAttribute("Max", originalStats.breath.max)
+                    breath.Value = originalStats.breath.val
+                end
+            end
+        end
+    end,
+})
+
+local staminaConn
+local InfiniteStaminaToggle = MainTab:CreateToggle({
+    Name = "Infinite Stamina",
+    CurrentValue = false,
+    Flag = "InfiniteStamina",
+    Callback = function(Value)
+        local char = getCharacter()
+        local sprint = char:FindFirstChild("Sprint")
+        if sprint then
+            local stam = sprint:FindFirstChild("Stam")
+            local overdrive = sprint:FindFirstChild("Overdrive")
+
+            if Value then
+                staminaConn = RunService.Heartbeat:Connect(function()
+                    if stam and overdrive then
+                        stam:SetAttribute("Max", math.huge)
+                        stam.Value = math.huge
+                        overdrive.Value = math.huge
+                    end
+                end)
+            else
+                if staminaConn then
+                    staminaConn:Disconnect()
+                    staminaConn = nil
+                end
+                if stam and overdrive and originalStats.stam then
+                    stam:SetAttribute("Max", originalStats.stam.max)
+                    stam.Value = originalStats.stam.val
+                    overdrive.Value = originalStats.overdrive
+                end
+            end
+        end
+    end,
+})
+
+local batteryConn
+local InfiniteBatteryToggle = MainTab:CreateToggle({
+    Name = "Infinite Battery",
+    CurrentValue = false,
+    Flag = "InfiniteBattery",
+    Callback = function(Value)
+        if Value then
+            batteryConn = RunService.Heartbeat:Connect(function()
+                local char = getCharacter()
+                local flashlight = char:FindFirstChild("Flashlight")
+                if flashlight then
+                    local battery = flashlight:FindFirstChild("Battery")
+                    local charges = flashlight:FindFirstChild("Charges")
+                    if battery and charges then
+                        battery:SetAttribute("Max", math.huge)
+                        battery.Value = math.huge
+                        charges.Value = math.huge
+                    end
+                end
+            end)
+        else
+            if batteryConn then
+                batteryConn:Disconnect()
+                batteryConn = nil
+            end
+        end
+    end,
+})
+
+MainTab:CreateSection("Automation & Helpers")
+
+-- Wires Automation
+local wireConnections = {}
+local wireRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("ClickWire")
+local wiresFolder = workspace:WaitForChild("FuseBox"):WaitForChild("Wires")
+
+local function hookWire(wire)
+    if wire:FindFirstChild("Highlight") then
+        if wire.Highlight.Enabled then
+            wireRemote:FireServer(wire)
+        end
+        table.insert(wireConnections, wire.Highlight:GetPropertyChangedSignal("Enabled"):Connect(function()
+            if getgenv().wireLoop and wire.Highlight.Enabled then
+                wireRemote:FireServer(wire)
+            end
+        end))
+    end
+end
+
+local AutoFixFuseToggle = MainTab:CreateToggle({
+    Name = "Auto Fix Fuse",
+    CurrentValue = false,
+    Flag = "AutoFixFuse",
+    Callback = function(Value)
+        getgenv().wireLoop = Value
+        if Value then
+            for _, wire in ipairs(wiresFolder:GetChildren()) do
+                hookWire(wire)
+            end
+        else
+            for _, conn in ipairs(wireConnections) do
+                conn:Disconnect()
+            end
+            wireConnections = {}
+        end
+    end,
+})
+
+-- Auto Ghost
+getgenv().AutoGhost = false
+local ghostRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("GhostOffer")
+
+workspace.ChildAdded:Connect(function(child)
+    if child.Name == "GhostChild2" and child:IsA("Model") and getgenv().AutoGhost then
+        task.wait(0.5)
+        ghostRemote:FireServer(true)
+    end
+end)
+
+local AutoGhostToggle = MainTab:CreateToggle({
+    Name = "Auto Buy Ghost",
+    CurrentValue = false,
+    Flag = "AutoGhostToggle",
+    Callback = function(Value)
+        getgenv().AutoGhost = Value
+        if Value and workspace:FindFirstChild("GhostChild2") then
+            ghostRemote:FireServer(true)
+        end
+    end,
+})
+
+local AntiAFKToggle = MainTab:CreateToggle({
+    Name = "Anti AFK",
+    CurrentValue = false,
+    Flag = "AntiAFK",
+    Callback = function(Value)
+        if Value then
+            getgenv().AntiAFKConn = localPlayer.Idled:Connect(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2()
+            end)
+        else
+            if getgenv().AntiAFKConn then
+                getgenv().AntiAFKConn:Disconnect()
+                getgenv().AntiAFKConn = nil
+            end
+        end
+    end,
+})
+
+MainTab:CreateSection("Credits")
+MainTab:CreateLabel("Script made by MMP (@MMP_Main)")
+
+---------------------------------------------------------
+-- GENERATOR TAB
+---------------------------------------------------------
+GeneratorTab:CreateSection("Generator Status")
+
+local FuelParagraph = GeneratorTab:CreateParagraph({
+    Title = "Generator Fuel Status",
+    Content = "Loading..."
+})
+
+task.spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            FuelParagraph:Set({
+                Title = "Generator Fuel Status",
+                Content = "Current Fuel: " .. workspace.Shack.Generator.Fuel.Value
+            })
+        end)
+    end
+end)
+
+getgenv().AutoFill = false
+local generator = workspace.Shack.Generator
+local fuelVal = generator:WaitForChild("Fuel")
+local jerryCan = workspace.Shack.JerryCan
+
+local AutoFillGenToggle = GeneratorTab:CreateToggle({
+    Name = "Auto Fill Generator",
+    CurrentValue = false,
+    Flag = "AutoFillGen",
+    Callback = function(Value)
+        getgenv().AutoFill = Value
+    end,
+})
+
+local isFilling = false
+local oldPos = nil
+RunService.Heartbeat:Connect(function()
+    if getgenv().AutoFill and fuelVal then
+        local root = getCharacter():WaitForChild("HumanoidRootPart")
+        local maxFuel = fuelVal:GetAttribute("Max") or 100
+
+        if fuelVal.Value <= math.floor(maxFuel / 2) and not isFilling then
+            isFilling = true
+            oldPos = root.CFrame
+        end
+
+        if isFilling then
+            if fuelVal.Value < maxFuel then
+                root.CFrame = CFrame.new(-75, 5, -134)
+                if jerryCan:FindFirstChild("ClickDetector") then fireclickdetector(jerryCan.ClickDetector) end
+                if generator:FindFirstChild("ClickDetector") then fireclickdetector(generator.ClickDetector) end
+            else
+                root.CFrame = oldPos
+                isFilling = false
+            end
+        end
+    end
+end)
+
+---------------------------------------------------------
+-- LOCAL PLAYER TAB
+---------------------------------------------------------
+LocalPlayerTab:CreateSection("Visuals & Utilities")
+
+local CameraModeButton = LocalPlayerTab:CreateButton({
+    Name = "Change Camera Mode",
+    Callback = function()
+        if localPlayer.CameraMode == Enum.CameraMode.LockFirstPerson then
+            localPlayer.CameraMode = Enum.CameraMode.Classic
+        else
+            localPlayer.CameraMode = Enum.CameraMode.LockFirstPerson
+        end
+    end,
+})
+
+local lightingBackup = {}
+local FullbrightToggle = LocalPlayerTab:CreateToggle({
+    Name = "Fullbright + NoFog",
+    CurrentValue = false,
+    Flag = "FullbrightToggle",
+    Callback = function(Value)
+        if Value then
+            lightingBackup.FogStart = Lighting.FogStart
+            lightingBackup.FogEnd = Lighting.FogEnd
+            lightingBackup.GlobalShadows = Lighting.GlobalShadows
+            lightingBackup.OutdoorAmbient = Lighting.OutdoorAmbient
+
+            lightingBackup.RenderConn = RunService.RenderStepped:Connect(function()
+                Lighting.GlobalShadows = false
+                Lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+                Lighting.FogStart = 0
+                Lighting.FogEnd = 10000000000
+                for _, atmos in pairs(Lighting:GetChildren()) do
+                    if atmos:IsA("Atmosphere") then
+                        atmos.Density = 0
+                        atmos.Glare = 0
+                        atmos.Haze = 0
+                    end
+                end
+            end)
+        else
+            if lightingBackup.RenderConn then
+                lightingBackup.RenderConn:Disconnect()
+                lightingBackup.RenderConn = nil
+            end
+            Lighting.FogStart = lightingBackup.FogStart or Lighting.FogStart
+            Lighting.FogEnd = lightingBackup.FogEnd or Lighting.FogEnd
+            Lighting.GlobalShadows = lightingBackup.GlobalShadows ~= nil and lightingBackup.GlobalShadows or Lighting.GlobalShadows
+            Lighting.OutdoorAmbient = lightingBackup.OutdoorAmbient or Lighting.OutdoorAmbient
+        end
+    end,
+})
+
+local DisableTempToggle = LocalPlayerTab:CreateToggle({
+    Name = "Disable Temperature",
+    CurrentValue = false,
+    Flag = "DisableTempToggle",
+    Callback = function(Value)
+        local temp = getCharacter():FindFirstChild("Temperature")
+        if temp then
+            temp.Enabled = not Value
+        end
+    end,
+})
+
+LocalPlayerTab:CreateSection("ESP Visuals")
+
+-- Custom Corner Bracket ESP for Mutant
+local cornerLines = {}
+for i = 1, 8 do
+    local l = Drawing.new("Line")
+    l.Visible = false
+    l.Thickness = 2
+    l.Color = Color3.fromRGB(255, 60, 60)
+    table.insert(cornerLines, l)
+end
+
+local espText = Drawing.new("Text")
+espText.Center = true
+espText.Visible = false
+espText.Font = 2
+espText.Outline = true
+espText.Color = Color3.fromRGB(255, 255, 255)
+espText.Size = 16
+
+RunService.RenderStepped:Connect(function()
+    if not getgenv().espLoop then
+        for _, l in ipairs(cornerLines) do l.Visible = false end
+        espText.Visible = false
+        return
+    end
+
+    local mutant = workspace:FindFirstChild("Mutant")
+    local char = getCharacter()
+
+    if mutant and mutant:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
+        local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(mutant.HumanoidRootPart.Position)
+        if onScreen then
+            local size = Vector2.new(1800 / vector.Z, 3200 / vector.Z)
+            local pos = Vector2.new(vector.X - size.X / 2, vector.Y - size.Y / 2)
+            
+            local x, y, w, h = pos.X, pos.Y, size.X, size.Y
+            local length = math.clamp(w / 4, 6, 16)
+
+            -- Top-Left Corner
+            cornerLines[1].From = Vector2.new(x, y)
+            cornerLines[1].To = Vector2.new(x + length, y)
+            cornerLines[2].From = Vector2.new(x, y)
+            cornerLines[2].To = Vector2.new(x, y + length)
+
+            -- Top-Right Corner
+            cornerLines[3].From = Vector2.new(x + w, y)
+            cornerLines[3].To = Vector2.new(x + w - length, y)
+            cornerLines[4].From = Vector2.new(x + w, y)
+            cornerLines[4].To = Vector2.new(x + w, y + length)
+
+            -- Bottom-Left Corner
+            cornerLines[5].From = Vector2.new(x, y + h)
+            cornerLines[5].To = Vector2.new(x + length, y + h)
+            cornerLines[6].From = Vector2.new(x, y + h)
+            cornerLines[6].To = Vector2.new(x, y + h - length)
+
+            -- Bottom-Right Corner
+            cornerLines[7].From = Vector2.new(x + w, y + h)
+            cornerLines[7].To = Vector2.new(x + w - length, y + h)
+            cornerLines[8].From = Vector2.new(x + w, y + h)
+            cornerLines[8].To = Vector2.new(x + w, y + h - length)
+
+            for _, l in ipairs(cornerLines) do l.Visible = true end
+
+            espText.Visible = true
+            espText.Position = Vector2.new(vector.X, y - 22)
+            local dist = math.floor((char.HumanoidRootPart.Position - mutant.HumanoidRootPart.Position).Magnitude)
+            espText.Text = "MUTANT [" .. dist .. "m]"
+        else
+            for _, l in ipairs(cornerLines) do l.Visible = false end
+            espText.Visible = false
+        end
+    else
+        for _, l in ipairs(cornerLines) do l.Visible = false end
+        espText.Visible = false
+    end
+end)
+
+local EspMutantToggle = LocalPlayerTab:CreateToggle({
+    Name = "ESP Mutant",
+    CurrentValue = false,
+    Flag = "EspMutantToggle",
+    Callback = function(Value)
+        getgenv().espLoop = Value
+        if not Value then
+            for _, l in ipairs(cornerLines) do l.Visible = false end
+            espText.Visible = false
+        end
+    end,
+})
+
+---------------------------------------------------------
+-- SAFE SPOT TAB
+---------------------------------------------------------
+SafeSpotTab:CreateSection("Safe Teleports")
+
+local safeSpots = {
+    ["Safe Spot 1 - Night 1 + Endless"] = Vector3.new(-16.58, 23.8, -53.75),
+    ["Safe Spot 2 - Night 1 + Endless"] = Vector3.new(2, 17.1, -37.8),
+    ["Safe Spot 3 - Night 1 + Endless"] = Vector3.new(-10, 33, -70),
+    ["Safe Spot 4 - Night 1 + Endless"] = Vector3.new(6.7, 26.1, -70.7)
+}
+local selectedSpot = "Safe Spot 1 - Night 1 + Endless"
+
+local SafeSpotDropdown = SafeSpotTab:CreateDropdown({
+    Name = "Select Safe Spot",
+    Options = {
+        "Safe Spot 1 - Night 1 + Endless",
+        "Safe Spot 2 - Night 1 + Endless",
+        "Safe Spot 3 - Night 1 + Endless",
+        "Safe Spot 4 - Night 1 + Endless"
+    },
+    CurrentOption = {"Safe Spot 1 - Night 1 + Endless"},
+    MultipleOptions = false,
+    Flag = "SafeSpotDropdown",
+    Callback = function(Option)
+        selectedSpot = Option[1]
+    end,
+})
+
+local safeSpotTPConn, safeSpotCollideConn
+local SafeSpotToggle = SafeSpotTab:CreateToggle({
+    Name = "Teleport Safe Spot",
+    CurrentValue = false,
+    Flag = "SafeSpotToggle",
+    Callback = function(Value)
+        if Value then
+            safeSpotTPConn = RunService.Heartbeat:Connect(function()
+                local root = getCharacter():FindFirstChild("HumanoidRootPart")
+                if root and safeSpots[selectedSpot] then
+                    root.CFrame = CFrame.new(safeSpots[selectedSpot])
+                end
+            end)
+            safeSpotCollideConn = RunService.Stepped:Connect(function()
+                local char = getCharacter()
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
+            end)
+        else
+            if safeSpotTPConn then safeSpotTPConn:Disconnect() safeSpotTPConn = nil end
+            if safeSpotCollideConn then safeSpotCollideConn:Disconnect() safeSpotCollideConn = nil end
+        end
+    end,
+})
+
+Rayfield:LoadConfiguration()
