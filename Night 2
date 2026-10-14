@@ -1156,7 +1156,7 @@ playerSettingTab:CreateToggle({
   Name = "Infinite Stamina",
   CurrentValue = false,
   Callback = function(Value)
-         local char = getCharacter()
+      local char = getCharacter()
         local sprint = char:FindFirstChild("Sprint")
         if sprint then
             local stam = sprint:FindFirstChild("Stam")
@@ -1187,12 +1187,11 @@ playerSettingTab:CreateToggle({
 
 playerSettingTab:CreateSection("Equipment")
 
-local batteryConn
 playerSettingTab:CreateToggle({
   Name = "Infinite Flashlight Battery",
   CurrentValue = false,
   Callback = function(Value)
-         if Value then
+      if Value then
             batteryConn = RunService.Heartbeat:Connect(function()
                 local char = getCharacter()
                 local flashlight = char:FindFirstChild("Flashlight")
