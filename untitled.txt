@@ -1,0 +1,1610 @@
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local v1 = game:GetService("Workspace")
+local lighting = game:GetService("Lighting")
+local players = game:GetService("Players")
+local coreGui = game:GetService("CoreGui")
+local waitForChild = replicatedStorage:WaitForChild("Remotes", 5)
+
+if waitForChild then
+  local kick = waitForChild:FindFirstChild("Kick")
+
+  local kicks = kick
+  kicks = kick or waitForChild:WaitForChild("Kick", 5)
+
+  if kicks then
+    kicks.Name = "Kicks"
+
+    if getconnections then
+      for index, value in ipairs(getconnections(kicks.OnClientEvent)) do
+        value:Disable()
+      end
+    end
+  end
+end
+
+local function f1(p1)
+  for index2, value2 in ipairs(v1:GetDescendants()) do
+    if value2:IsA("BasePart") then
+      if (value2.CFrame.Position - p1.Position).Magnitude < 0.1 then
+        value2:Destroy()
+      end
+    end
+  end
+end
+
+f1(CFrame.new(-285.894043, 87.2499695, 20.479248, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+
+local rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local scriptHubWindow = rayfield:CreateWindow({
+  Name = "Residence Massacre Night 2 | MMP",
+  LoadingTitle = "Residence Massacre | Night 2,
+  LoadingSubtitle = "By MMP",
+  ConfigurationSaving = {
+    Enabled = true,
+    FolderName = "ScriptHubConfig",
+    FileName = "MainConfig",
+  },
+})
+
+local mainTab = scriptHubWindow:CreateTab("Main", "home")
+mainTab:CreateSection("Credits")
+mainTab:CreateLabel("Script made by MMP (@MMP_Main)")
+mainTab:CreateSection("Support & Bug Report")
+
+mainTab:CreateButton({
+  Name = "Copy YouTube link (For Support)",
+  Callback = function()
+    if setclipboard then
+      setclipboard("https://www.youtube.com/@MMP_Main")
+
+      rayfield:Notify({
+        Title = "Success!",
+        Content = "YouTube link copied to clipboard.",
+        Duration = 3,
+        Image = "check",
+      })
+    else
+      rayfield:Notify({
+        Title = "Error",
+        Content = "Your executor does not support setclipboard.",
+        Duration = 3,
+        Image = "X",
+      })
+    end
+  end,
+})
+
+mainTab:CreateSection("Information")
+
+local modeNormalLabel = mainTab:CreateLabel("Mode: Normal")
+local playersLoadingLabel = mainTab:CreateLabel("Players: Loading...")
+
+local function f2()
+  local v2 = false
+  local mutant = workspace:FindFirstChild("Mutant")
+
+  if mutant and mutant:IsA("Model") then
+    local humanoid = mutant:FindFirstChildWhichIsA("Humanoid")
+
+    if humanoid and humanoid.WalkSpeed >= 18 then
+      v2 = true
+    end
+  end
+
+  if not v2 then
+    pcall(function()
+      for index3, value3 in ipairs(lighting:GetChildren()) do
+        if value3:IsA("Sky") then
+          local lower = value3.Name:lower()
+
+          if string.find(lower, "blood", 1, true) then
+            local destroy = value3.Destroy
+            v2 = true
+            destroy(value3)
+          end
+        end
+      end
+    end)
+  end
+
+  if v2 then
+    modeNormalLabel:Set("Mode: Bloodmoon")
+  else
+    modeNormalLabel:Set("Mode: Normal")
+  end
+end
+
+local function f3()
+  pcall(function() playersLoadingLabel:Set("Players: " .. tostring(#players:GetPlayers())) end)
+end
+
+f2()
+f3()
+
+task.spawn(function()
+  while task.wait(1) do
+    f2()
+  end
+end)
+
+task.spawn(function()
+  while task.wait(10) do
+    f3()
+  end
+end)
+
+local espTab = scriptHubWindow:CreateTab("ESP", "eye")
+local localPlayer = players.LocalPlayer
+espTab:CreateSection("Monsters")
+local espMutant = false
+
+local monsterESP = Instance.new("Folder")
+monsterESP.Name = "MonsterESP"
+monsterESP.Parent = coreGui
+
+local v3 = {}
+local color = Color3.fromRGB(255, 50, 50)
+local f4
+
+local function f5(p2, p3)
+  if not p2 or not p2.Parent or not p3 then
+    return false
+  else
+    local v4 = f4(p2)
+    local character = localPlayer.Character
+
+    local humanoidRootPart = character
+    humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+
+    local v5 = not v4
+    local v6 = humanoidRootPart
+
+    if v5 or not v6 then
+      return false
+    end
+
+    p3.Billboard.Adornee = v4
+
+    p3.Text.Text = string.format(
+      "%s\n[%dm]", p2.Name, math.floor((v6.Position - v4.Position).Magnitude)
+    )
+
+    return true
+  end
+end
+
+local function f6(p4)
+  if not p4 or v3[p4] then
+    return
+  else
+    local v7 = f4(p4)
+
+    if not v7 then
+      return
+    else
+      local monsterHighlight = Instance.new("Highlight")
+      monsterHighlight.Name = "MonsterHighlight"
+      monsterHighlight.Adornee = p4
+      monsterHighlight.FillColor = color
+      monsterHighlight.OutlineColor = color
+      monsterHighlight.FillTransparency = 1
+      monsterHighlight.OutlineTransparency = 0
+      monsterHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      monsterHighlight.Parent = monsterESP
+
+      local monsterInfo = Instance.new("BillboardGui")
+      monsterInfo.Name = "MonsterInfo"
+      monsterInfo.Adornee = v7
+      monsterInfo.Size = UDim2.new(0, 180, 0, 45)
+      monsterInfo.StudsOffset = Vector3.new(0, 3, 0)
+      monsterInfo.AlwaysOnTop = true
+      monsterInfo.Parent = monsterESP
+
+      local textLabel = Instance.new("TextLabel")
+      textLabel.Size = UDim2.fromScale(1, 1)
+      textLabel.BackgroundTransparency = 1
+      textLabel.TextColor3 = color
+      textLabel.TextStrokeTransparency = 0
+      textLabel.TextSize = 14
+      textLabel.Font = Enum.Font.GothamBold
+      textLabel.Text = p4.Name
+      textLabel.Parent = monsterInfo
+
+      v3[p4] = { Highlight = monsterHighlight, Billboard = monsterInfo, Text = textLabel }
+      return
+    end
+  end
+end
+
+function f4(p5)
+  if not p5 then
+    return nil
+  elseif p5:IsA("BasePart") then
+    return p5
+  else
+    if p5:IsA("Model") then
+      return p5:FindFirstChild("HumanoidRootPart") or p5.PrimaryPart
+        or p5:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    return nil
+  end
+end
+
+local function f7(p6)
+  local v8 = v3[p6]
+
+  if not v8 then
+    return
+  end
+
+  pcall(function()
+    v8.Highlight:Destroy()
+    v8.Billboard:Destroy()
+  end)
+
+  v3[p6] = nil
+end
+
+local function f8()
+  pcall(function()
+    if espMutant then
+      local mutant2 = workspace:FindFirstChild("Mutant")
+
+      if mutant2 then
+        f6(mutant2)
+      end
+    end
+  end)
+end
+
+local function f9()
+  for key, value4 in pairs(v3) do
+    local v9 = false
+
+    if key and key.Parent and key:IsDescendantOf(workspace) then
+      if key.Name == "Mutant" and espMutant then
+        v9 = true
+      end
+    end
+
+    if not v9 then
+      f7(key)
+    end
+  end
+end
+
+task.spawn(function()
+  while task.wait(0.5) do
+    f8()
+    f9()
+  end
+end)
+
+task.spawn(function()
+  while task.wait(0.1) do
+    for key2, value5 in pairs(v3) do
+      local v10, v11 = pcall(f5, key2, value5)
+
+      if not v10 or not v11 then
+        f7(key2)
+      end
+    end
+  end
+end)
+
+espTab:CreateToggle({
+  Name = "Esp Mutant",
+  CurrentValue = false,
+  Callback = function(value6)
+    espMutant = value6
+
+    if not value6 then
+      local mutant3 = workspace:FindFirstChild("Mutant")
+
+      if mutant3 then
+        f7(mutant3)
+      end
+    end
+  end,
+})
+
+local espStalker = false
+
+local function f10(p7)
+  if not p7 then
+    return nil
+  elseif p7:IsA("Model") then
+    return p7:FindFirstChild("HumanoidRootPart") or p7.PrimaryPart
+  else
+    if p7:IsA("BasePart") then
+      return p7
+    end
+
+    return p7:FindFirstChildWhichIsA("BasePart", true)
+  end
+end
+
+local v12, v13, f11
+
+local function f12(p8)
+  if not espStalker or not p8 then
+    return
+  else
+    f11()
+
+    local stalkerESP = Instance.new("Highlight")
+    stalkerESP.Name = "StalkerESP"
+    stalkerESP.Adornee = p8
+    stalkerESP.FillTransparency = 1
+    stalkerESP.OutlineTransparency = 0
+    stalkerESP.OutlineColor = Color3.fromRGB(255, 0, 0)
+    stalkerESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    stalkerESP.Parent = p8
+
+    v12 = stalkerESP
+    local v14 = f10(p8)
+
+    if not v14 then
+      return
+    else
+      local stalkerESPInfo = Instance.new("BillboardGui")
+      stalkerESPInfo.Name = "StalkerESPInfo"
+      stalkerESPInfo.Adornee = v14
+      stalkerESPInfo.Size = UDim2.new(0, 200, 0, 50)
+      stalkerESPInfo.StudsOffset = Vector3.new(0, 3, 0)
+      stalkerESPInfo.AlwaysOnTop = true
+      stalkerESPInfo.MaxDistance = 1000
+      stalkerESPInfo.Parent = v14
+
+      local info = Instance.new("TextLabel")
+      info.Name = "Info"
+      info.Size = UDim2.fromScale(1, 1)
+      info.BackgroundTransparency = 1
+      info.Text = p8.Name .. " [0m]"
+      info.TextColor3 = Color3.fromRGB(255, 0, 0)
+      info.TextStrokeTransparency = 0
+      info.TextSize = 14
+      info.Font = Enum.Font.GothamBold
+      info.Parent = stalkerESPInfo
+
+      v13 = stalkerESPInfo
+      return
+    end
+  end
+end
+
+function f11()
+  if v12 then
+    v12:Destroy()
+  end
+
+  if v13 then
+    v13:Destroy()
+  end
+
+  v12 = nil
+  v13 = nil
+end
+
+local function f13()
+  if not espStalker then
+    return
+  else
+    local stalker = workspace:FindFirstChild("Stalker")
+
+    if not stalker then
+      f11()
+      return
+    else
+      local v15 = f10(stalker)
+      local v16 = f10(localPlayer.Character)
+
+      if not v15 or not v16 then
+        return
+      end
+
+      if not v12 or v12.Adornee ~= stalker then
+        f12(stalker)
+      end
+
+      if not v13 then
+        return
+      else
+        local info2 = v13:FindFirstChild("Info")
+
+        if info2 then
+          info2.Text = stalker.Name .. " ["
+            .. math.floor((v16.Position - v15.Position).Magnitude) .. "m]"
+        end
+
+        return
+      end
+    end
+  end
+end
+
+task.spawn(function()
+  while true do
+    if espStalker then
+      local stalker2 = workspace:FindFirstChild("Stalker")
+
+      if stalker2 then
+        if not v12 or v12.Adornee ~= stalker2 then
+          f12(stalker2)
+        end
+      else
+        f11()
+      end
+    end
+
+    task.wait(2)
+  end
+end)
+
+task.spawn(function()
+  while true do
+    if espStalker then
+      f13()
+    end
+
+    task.wait(0.1)
+  end
+end)
+
+espTab:CreateToggle({
+  Name = "Esp Stalker",
+  CurrentValue = false,
+  Callback = function(value7)
+    espStalker = value7
+
+    if not value7 then
+      f11()
+    end
+  end,
+})
+
+local v17 = {}
+
+local function f14(p9)
+  local v18 = v17[p9]
+
+  if v18 then
+    pcall(function()
+      v18.Highlight:Destroy()
+      v18.Billboard:Destroy()
+    end)
+
+    v17[p9] = nil
+  end
+end
+
+local espRat = false
+
+local function f15(p10)
+  if p10:IsA("BasePart") then
+    return p10
+  end
+
+  return p10.PrimaryPart or p10:FindFirstChild("HumanoidRootPart", true)
+    or p10:FindFirstChildWhichIsA("BasePart", true)
+end
+
+local function f16(p11)
+  local findFirstChild = p11:FindFirstChild("Progress", true)
+
+  if findFirstChild and findFirstChild:IsA("ValueBase") then
+    return findFirstChild.Value
+  end
+
+  return "?"
+end
+
+local function f17(p12)
+  if v17[p12] then
+    return
+  else
+    local v19 = f15(p12)
+
+    if not v19 then
+      return
+    else
+      local ratESP = Instance.new("Highlight")
+      ratESP.Name = "RatESP"
+      ratESP.Adornee = p12
+      ratESP.FillTransparency = 1
+      ratESP.OutlineTransparency = 0
+      ratESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      ratESP.Parent = p12
+
+      local ratESPInfo = Instance.new("BillboardGui")
+      ratESPInfo.Name = "RatESP_Info"
+      ratESPInfo.Adornee = v19
+      ratESPInfo.Size = UDim2.fromOffset(180, 50)
+      ratESPInfo.StudsOffset = Vector3.new(0, 2.5, 0)
+      ratESPInfo.AlwaysOnTop = true
+      ratESPInfo.Parent = v19
+
+      local textLabel2 = Instance.new("TextLabel")
+      textLabel2.BackgroundTransparency = 1
+      textLabel2.Size = UDim2.fromScale(1, 1)
+      textLabel2.Font = Enum.Font.GothamBold
+      textLabel2.TextSize = 14
+      textLabel2.TextColor3 = Color3.new(1, 1, 1)
+      textLabel2.TextStrokeTransparency = 0
+      textLabel2.Text = p12.Name
+      textLabel2.Parent = ratESPInfo
+
+      v17[p12] = { Highlight = ratESP, Billboard = ratESPInfo, Text = textLabel2 }
+      return
+    end
+  end
+end
+
+local espRat = false
+
+local function f15(p10)
+  if p10:IsA("BasePart") then
+    return p10
+  end
+
+  return p10.PrimaryPart or p10:FindFirstChild("HumanoidRootPart", true)
+    or p10:FindFirstChildWhichIsA("BasePart", true)
+end
+
+local function f16(p11)
+  local findFirstChild = p11:FindFirstChild("Progress", true)
+
+  if findFirstChild and findFirstChild:IsA("ValueBase") then
+    return findFirstChild.Value
+  end
+
+  return "?"
+end
+
+local function f17(p12)
+  if v17[p12] then
+    return
+  else
+    local v19 = f15(p12)
+
+    if not v19 then
+      return
+    else
+      local ratESP = Instance.new("Highlight")
+      ratESP.Name = "RatESP"
+      ratESP.Adornee = p12
+      ratESP.FillTransparency = 1
+      ratESP.OutlineTransparency = 0
+      ratESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      ratESP.Parent = p12
+
+      local ratESPInfo = Instance.new("BillboardGui")
+      ratESPInfo.Name = "RatESP_Info"
+      ratESPInfo.Adornee = v19
+      ratESPInfo.Size = UDim2.fromOffset(180, 50)
+      ratESPInfo.StudsOffset = Vector3.new(0, 2.5, 0)
+      ratESPInfo.AlwaysOnTop = true
+      ratESPInfo.Parent = v19
+
+      local textLabel2 = Instance.new("TextLabel")
+      textLabel2.BackgroundTransparency = 1
+      textLabel2.Size = UDim2.fromScale(1, 1)
+      textLabel2.Font = Enum.Font.GothamBold
+      textLabel2.TextSize = 14
+      textLabel2.TextColor3 = Color3.new(1, 1, 1)
+      textLabel2.TextStrokeTransparency = 0
+      textLabel2.Text = p12.Name
+      textLabel2.Parent = ratESPInfo
+
+      v17[p12] = { Highlight = ratESP, Billboard = ratESPInfo, Text = textLabel2 }
+      return
+    end
+  end
+end
+
+local function f18()
+  local floodlights = workspace:FindFirstChild("Floodlights")
+
+  if not floodlights then
+    return
+  else
+    local v20 = {}
+
+    for index4, value8 in ipairs(floodlights:GetChildren()) do
+      if value8.Name == "Light" then
+        local wire = value8:FindFirstChild("Wire")
+
+        local hole = wire
+        hole = wire and wire:FindFirstChild("Hole")
+
+        if hole then
+          for index5, value9 in ipairs(hole:GetChildren()) do
+            if value9.Name == "Rat" then
+              v20[value9] = true
+              f17(value9)
+            end
+          end
+        end
+      end
+    end
+
+    for key3 in pairs(v17) do
+      if not v20[key3] then
+        f14(key3)
+      end
+    end
+
+    return
+  end
+end
+
+local function f19()
+  local character2 = localPlayer.Character
+  local humanoidRootPart2 = character2 and character2:FindFirstChild("HumanoidRootPart")
+
+  if not humanoidRootPart2 then
+    return
+  end
+
+  for key4, value10 in pairs(v17) do
+    if not key4:IsDescendantOf(workspace) then
+      f14(key4)
+    else
+      local v21 = f15(key4)
+
+      if v21 then
+        value10.Text.Text = key4.Name .. " [" .. math.floor((humanoidRootPart2.Position - v21.Position).Magnitude) .. [[
+m]
+Progress: ]] .. tostring(f16(key4))
+      end
+    end
+  end
+end
+
+espTab:CreateToggle({
+  Name = "Esp Rat",
+  CurrentValue = false,
+  Callback = function(value11)
+    espRat = value11
+
+    if not value11 then
+      for key5 in pairs(v17) do
+        f14(key5)
+      end
+    end
+  end,
+})
+
+task.spawn(function()
+  while true do
+    if espRat then
+      pcall(f18)
+    end
+
+    task.wait(2)
+  end
+end)
+
+task.spawn(function()
+  while true do
+    if espRat then
+      pcall(f19)
+    end
+
+    task.wait(0.1)
+  end
+end)
+
+local espZombies = false
+local v22 = {}
+
+local function f20(p13)
+  local v23 = v22[p13]
+
+  if not v23 then
+    return
+  end
+
+  pcall(function()
+    v23.Highlight:Destroy()
+    v23.Billboard:Destroy()
+  end)
+
+  v22[p13] = nil
+end
+
+local color2 = Color3.fromRGB(255, 255, 255)
+
+local function f21(p14)
+  if p14:IsA("BasePart") then
+    return p14
+  else
+    local findFirstChild2 = p14:FindFirstChild("HumanoidRootPart", true)
+
+    if findFirstChild2 then
+      return findFirstChild2
+    end
+
+    if p14.PrimaryPart then
+      return p14.PrimaryPart
+    end
+
+    return p14:FindFirstChildWhichIsA("BasePart", true)
+  end
+end
+
+local function f22(p15)
+  if not p15 or not p15:IsA("Model") then
+    return false
+  else
+    local lower2 = p15.Name:lower()
+    return string.find(lower2, "zombie", 1, true) ~= nil
+  end
+end
+
+local function f23(p16)
+  if v22[p16] then
+    return
+  else
+    local v24 = f21(p16)
+
+    if not v24 then
+      return
+    else
+      local zombieESP = Instance.new("Highlight")
+      zombieESP.Name = "ZombieESP"
+      zombieESP.Adornee = p16
+      zombieESP.FillColor = color2
+      zombieESP.OutlineColor = color2
+      zombieESP.FillTransparency = 1
+      zombieESP.OutlineTransparency = 0
+      zombieESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      zombieESP.Parent = p16
+
+      local zombieInfo = Instance.new("BillboardGui")
+      zombieInfo.Name = "ZombieInfo"
+      zombieInfo.Adornee = v24
+      zombieInfo.Size = UDim2.new(0, 200, 0, 40)
+      zombieInfo.StudsOffset = Vector3.new(0, 3, 0)
+      zombieInfo.AlwaysOnTop = true
+      zombieInfo.Parent = v24
+
+      local textLabel3 = Instance.new("TextLabel")
+      textLabel3.Size = UDim2.fromScale(1, 1)
+      textLabel3.BackgroundTransparency = 1
+      textLabel3.TextColor3 = color2
+      textLabel3.TextStrokeTransparency = 0
+      textLabel3.TextSize = 14
+      textLabel3.Font = Enum.Font.SourceSansBold
+      textLabel3.Text = p16.Name
+      textLabel3.Parent = zombieInfo
+
+      v22[p16] = { Highlight = zombieESP, Billboard = zombieInfo, Text = textLabel3 }
+      return
+    end
+  end
+end
+
+local function f24()
+  local character3 = localPlayer.Character
+  local humanoidRootPart3 = character3 and character3:FindFirstChild("HumanoidRootPart")
+
+  if not humanoidRootPart3 then
+    return
+  end
+
+  for key6, value12 in pairs(v22) do
+    if key6.Parent then
+      local v25 = f21(key6)
+
+      if v25 then
+        value12.Text.Text = key6.Name .. " ["
+          .. math.floor((humanoidRootPart3.Position - v25.Position).Magnitude) .. "m]"
+      end
+    end
+  end
+end
+
+local function f25()
+  local v26 = {}
+
+  for index6, value13 in ipairs(workspace:GetDescendants()) do
+    if f22(value13) then
+      v26[value13] = true
+      f23(value13)
+    end
+  end
+
+  for key7 in pairs(v22) do
+    if not v26[key7] then
+      f20(key7)
+    end
+  end
+end
+
+task.spawn(function()
+  while true do
+    if espZombies then
+      pcall(f25)
+    end
+
+    task.wait(5)
+  end
+end)
+
+task.spawn(function()
+  while true do
+    if espZombies then
+      pcall(f24)
+    end
+
+    task.wait(0.1)
+  end
+end)
+
+espTab:CreateToggle({
+  Name = "Esp Zombies",
+  CurrentValue = false,
+  Callback = function(value14)
+    espZombies = value14
+
+    if not value14 then
+      for key8 in pairs(v22) do
+        f20(key8)
+      end
+    else
+      task.spawn(function() pcall(f25) end)
+    end
+  end,
+})
+
+espTab:CreateSection("Items")
+
+local espItems = false
+
+local itemsESP = Instance.new("Folder")
+itemsESP.Name = "ItemsESP"
+itemsESP.Parent = coreGui
+
+local v27 = {}
+local color3 = Color3.fromRGB(50, 255, 50)
+
+local function f26(p17)
+  local v28 = v27[p17]
+
+  if not v28 then
+    return
+  end
+
+  pcall(function()
+    v28.Highlight:Destroy()
+    v28.Billboard:Destroy()
+  end)
+
+  v27[p17] = nil
+end
+
+local f27
+
+local function f28(p18)
+  if not p18 or v27[p18] then
+    return
+  else
+    local v29 = f27(p18)
+
+    if not v29 then
+      return
+    else
+      local itemHighlight = Instance.new("Highlight")
+      itemHighlight.Name = "ItemHighlight"
+      itemHighlight.Adornee = p18
+      itemHighlight.FillColor = color3
+      itemHighlight.OutlineColor = color3
+      itemHighlight.FillTransparency = 1
+      itemHighlight.OutlineTransparency = 0
+      itemHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+      itemHighlight.Parent = itemsESP
+
+      local itemInfo = Instance.new("BillboardGui")
+      itemInfo.Name = "ItemInfo"
+      itemInfo.Adornee = v29
+      itemInfo.Size = UDim2.new(0, 200, 0, 40)
+      itemInfo.StudsOffset = Vector3.new(0, 3, 0)
+      itemInfo.AlwaysOnTop = true
+      itemInfo.Parent = itemsESP
+
+      local textLabel4 = Instance.new("TextLabel")
+      textLabel4.Size = UDim2.fromScale(1, 1)
+      textLabel4.BackgroundTransparency = 1
+      textLabel4.TextColor3 = color3
+      textLabel4.TextStrokeTransparency = 0
+      textLabel4.TextSize = 14
+      textLabel4.Font = Enum.Font.GothamBold
+      textLabel4.Text = p18.Name
+      textLabel4.Parent = itemInfo
+
+      v27[p18] = { Highlight = itemHighlight, Billboard = itemInfo, Text = textLabel4 }
+      return
+    end
+  end
+end
+
+function f27(p19)
+  if not p19 then
+    return nil
+  elseif p19:IsA("BasePart") then
+    return p19
+  elseif p19:IsA("Model") then
+    return p19.PrimaryPart or p19:FindFirstChild("Handle", true)
+      or p19:FindFirstChildWhichIsA("BasePart", true)
+  else
+    if p19:IsA("Tool") then
+      return p19:FindFirstChild("Handle", true) or p19:FindFirstChildWhichIsA("BasePart", true)
+    end
+
+    return p19:FindFirstChildWhichIsA("BasePart", true)
+  end
+end
+
+local function f29(p20, p21)
+  if not p20 or not p20.Parent or not p21 then
+    return false
+  else
+    local v30 = f27(p20)
+    local character4 = localPlayer.Character
+
+    local humanoidRootPart4 = character4
+    humanoidRootPart4 = character4 and character4:FindFirstChild("HumanoidRootPart")
+
+    local v31 = not v30
+    local v32 = humanoidRootPart4
+
+    if v31 or not v32 then
+      return false
+    end
+
+    p21.Billboard.Adornee = v30
+
+    p21.Text.Text = string.format(
+      "%s\n[%dm]", p20.Name, math.floor((v32.Position - v30.Position).Magnitude)
+    )
+
+    return true
+  end
+end
+
+local function f30()
+  local itemSpots = workspace:FindFirstChild("ItemSpots")
+
+  if not itemSpots then
+    return
+  end
+
+  for index7, value15 in ipairs(itemSpots:GetDescendants()) do
+    if value15:IsA("Tool") then
+      f28(value15)
+    end
+
+    if value15:IsA("ClickDetector") then
+      local parent = value15.Parent
+
+      if parent then
+        f28(parent)
+      end
+    end
+  end
+end
+
+local function f31()
+  for key9, value16 in pairs(v27) do
+    local v33 = false
+
+    if key9 and key9.Parent and key9:IsDescendantOf(workspace) then
+      local itemSpots2 = workspace:FindFirstChild("ItemSpots")
+
+      if itemSpots2 and key9:IsDescendantOf(itemSpots2) then
+        v33 = true
+      end
+    end
+
+    if not v33 then
+      f26(key9)
+    end
+  end
+end
+
+task.spawn(function()
+  while task.wait(1) do
+    if espItems then
+      pcall(function()
+        f30()
+        f31()
+      end)
+    end
+  end
+end)
+
+task.spawn(function()
+  while task.wait(1) do
+    if espItems then
+      pcall(function()
+        f30()
+        f31()
+      end)
+    end
+  end
+end)
+
+task.spawn(function()
+  while task.wait(0.1) do
+    if espItems then
+      for key10, value17 in pairs(v27) do
+        local v34, v35 = pcall(f29, key10, value17)
+
+        if not v34 or not v35 then
+          f26(key10)
+        end
+      end
+    end
+  end
+end)
+
+espTab:CreateToggle({
+  Name = "Esp Items",
+  CurrentValue = false,
+  Callback = function(value18)
+    espItems = value18
+
+    if not value18 then
+      for key11, value19 in pairs(v27) do
+        f26(key11)
+      end
+    end
+  end,
+})
+
+espTab:CreateSection("Notifications")
+
+local v36 = false
+
+local function f32(p22)
+  pcall(function()
+    rayfield:Notify({ Title = "Monster Spawned", Content = p22 .. " Spawned!", Duration = 3 })
+  end)
+end
+
+local v37 = { Mutant = false, Stalker = false }
+
+task.spawn(function()
+  while task.wait(1) do
+    pcall(function()
+      if not v36 then
+        v37.Mutant = false
+        v37.Stalker = false
+        return
+      end
+
+      if workspace:FindFirstChild("Mutant") then
+        if not v37.Mutant then
+          f32("Mutant")
+        end
+
+        v37.Mutant = true
+      else
+        v37.Mutant = false
+      end
+
+      if workspace:FindFirstChild("Stalker") then
+        if not v37.Stalker then
+          f32("Stalker")
+        end
+
+        v37.Stalker = true
+      else
+        v37.Stalker = false
+      end
+    end)
+  end
+end)
+
+espTab:CreateToggle({
+  Name = "Notify when Monsters Spawned",
+  CurrentValue = false,
+  Callback = function(value20)
+    v36 = value20
+
+    if not value20 then
+      v37.Mutant = false
+      v37.Stalker = false
+    end
+  end,
+})
+
+local playerSettingTab = scriptHubWindow:CreateTab("Player Setting", "user")
+local v38 = { Stamina = false, Flashlight = false, AntiCold = false }
+
+local v39 = {
+  Stam = nil,
+  Charges = nil,
+  Battery = nil,
+  Temperature = nil,
+}
+
+      local temperature = character5:FindFirstChild("Temperature")
+
+      if temperature then
+        if v38.AntiCold then
+          if v39.Temperature == nil then
+            v39.Temperature = temperature.Enabled
+          end
+
+          temperature.Enabled = false
+        elseif v39.Temperature ~= nil then
+          temperature.Enabled = v39.Temperature
+          v39.Temperature = nil
+        end
+      end
+    end
+  end
+end)
+
+playerSettingTab:CreateSection("Movement")
+
+playerSettingTab:CreateToggle({
+  Name = "Infinite Stamina",
+  CurrentValue = false,
+  Callback = function(Value)
+         local char = getCharacter()
+        local sprint = char:FindFirstChild("Sprint")
+        if sprint then
+            local stam = sprint:FindFirstChild("Stam")
+            local overdrive = sprint:FindFirstChild("Overdrive")
+
+            if Value then
+                staminaConn = RunService.Heartbeat:Connect(function()
+                    if stam and overdrive then
+                        stam:SetAttribute("Max", math.huge)
+                        stam.Value = math.huge
+                        overdrive.Value = math.huge
+                    end
+                end)
+            else
+                if staminaConn then
+                    staminaConn:Disconnect()
+                    staminaConn = nil
+                end
+                if stam and overdrive and originalStats.stam then
+                    stam:SetAttribute("Max", originalStats.stam.max)
+                    stam.Value = originalStats.stam.val
+                    overdrive.Value = originalStats.overdrive
+                end
+            end
+        end
+    end,
+})
+
+playerSettingTab:CreateSection("Equipment")
+
+local batteryConn
+playerSettingTab:CreateToggle({
+  Name = "Infinite Flashlight Battery",
+  CurrentValue = false,
+  Callback = function(Value)
+         if Value then
+            batteryConn = RunService.Heartbeat:Connect(function()
+                local char = getCharacter()
+                local flashlight = char:FindFirstChild("Flashlight")
+                if flashlight then
+                    local battery = flashlight:FindFirstChild("Battery")
+                    local charges = flashlight:FindFirstChild("Charges")
+                    if battery and charges then
+                        battery:SetAttribute("Max", math.huge)
+                        battery.Value = math.huge
+                        charges.Value = math.huge
+                    end
+                end
+            end)
+        else
+            if batteryConn then
+                batteryConn:Disconnect()
+                batteryConn = nil
+            end
+        end
+    end,
+})
+
+local fullBright = false
+local globalShadows = lighting.GlobalShadows
+
+local function f33()
+  local character6 = localPlayer.Character
+
+  if not character6 then
+    return nil
+  end
+
+  return character6:FindFirstChild("HumanoidRootPart")
+end
+
+local fullBrightLight
+
+local function f34()
+  lighting.GlobalShadows = globalShadows
+
+  if fullBrightLight then
+    fullBrightLight:Destroy()
+    fullBrightLight = nil
+  end
+end
+
+local function f35()
+  local v40 = f33()
+
+  if not v40 then
+    return
+  end
+
+  globalShadows = lighting.GlobalShadows
+  lighting.GlobalShadows = false
+
+  if not fullBrightLight then
+    fullBrightLight = Instance.new("PointLight")
+    fullBrightLight.Name = "FullBrightLight"
+    fullBrightLight.Range = 400
+    fullBrightLight.Brightness = 1
+    fullBrightLight.Shadows = false
+    fullBrightLight.Enabled = true
+    fullBrightLight.Parent = v40
+  else
+    fullBrightLight.Range = 400
+    fullBrightLight.Brightness = 1
+    fullBrightLight.Shadows = false
+    fullBrightLight.Enabled = true
+    fullBrightLight.Parent = v40
+  end
+end
+
+task.spawn(function()
+  while task.wait(0.5) do
+    if fullBright and fullBrightLight then
+      local v41 = f33()
+
+      if v41 then
+        fullBrightLight.Parent = v41
+      end
+    end
+  end
+end)
+
+playerSettingTab:CreateToggle({
+  Name = "Loopfullbright",
+  CurrentValue = false,
+  Callback = function(value23)
+    fullBright = value23
+
+    if value23 then
+      pcall(f35)
+    else
+      pcall(f34)
+    end
+  end,
+})
+
+playerSettingTab:CreateSection("Protection")
+
+playerSettingTab:CreateToggle({
+  Name = "Anti Cold",
+  CurrentValue = false,
+  Callback = function(value24) v38.AntiCold = value24 end,
+})
+
+local function f36()
+  local playerGui = players.LocalPlayer:FindFirstChild("PlayerGui")
+  local static
+
+  if not playerGui then
+    return
+  else
+    local dialogueUI = playerGui:FindFirstChild("DialogueUI")
+
+    if not dialogueUI then
+      return
+    end
+
+    static = dialogueUI:FindFirstChild("Static")
+
+    if static then
+      pcall(function() static:Destroy() end)
+    end
+
+    return
+  end
+end
+
+local v42 = false
+
+local function f37()
+  while v42 do
+    pcall(f36)
+    task.wait(0.05)
+  end
+end
+
+playerSettingTab:CreateToggle({
+  Name = "Anti Stalker Damage",
+  CurrentValue = false,
+  Callback = function(value25)
+    v42 = value25
+
+    if value25 then
+      task.spawn(f37)
+    end
+  end,
+})
+
+local function f38()
+  local grids = workspace:FindFirstChild("Grids")
+
+  if not grids then
+    return
+  end
+
+  for index8, value26 in ipairs(grids:GetChildren()) do
+    local hitbox = value26:FindFirstChild("Hitbox")
+
+    if hitbox then
+      pcall(function() hitbox:Destroy() end)
+    end
+  end
+end
+
+local antiGrids = false
+
+local function f39()
+  while antiGrids do
+    pcall(f38)
+    task.wait(0.2)
+  end
+end
+
+playerSettingTab:CreateToggle({
+  Name = "Anti Grids",
+  CurrentValue = false,
+  Callback = function(value27)
+    antiGrids = value27
+
+    if value27 then
+      task.spawn(f39)
+    end
+  end,
+})
+
+local function f40(p23, p24)
+  local findFirstChild3 = p23:FindFirstChild("Handle" .. p24)
+
+  if findFirstChild3 then
+    local findFirstChildWhichIsA = findFirstChild3:FindFirstChildWhichIsA("ClickDetector", true)
+
+    if findFirstChildWhichIsA then
+      return findFirstChildWhichIsA
+    end
+
+    return nil
+  end
+
+  return nil
+end
+
+local function f41(p25)
+  local textPart = p25:FindFirstChild("TextPart")
+  local surfaceGui = textPart and textPart:FindFirstChild("SurfaceGui")
+  local textLabel5 = surfaceGui and surfaceGui:FindFirstChild("TextLabel")
+
+  if not textLabel5 then
+    return nil
+  else
+    local d = tostring(textLabel5.Text):match("#(%d+)")
+    return d and tonumber(d)
+  end
+end
+
+local automaticallyTab = scriptHubWindow:CreateTab("Automatically", 4483362458)
+local autoPanel = false
+local f42
+
+local function f43()
+  local pressurePanels = workspace:FindFirstChild("PressurePanels")
+
+  if not pressurePanels then
+    return nil
+  else
+    local character7 = localPlayer.Character
+    local humanoidRootPart5 = character7 and character7:FindFirstChild("HumanoidRootPart")
+
+    if not humanoidRootPart5 then
+      return nil
+    else
+      local v43 = nil
+      local huge = math.huge
+
+      for index9, value28 in ipairs(pressurePanels:GetChildren()) do
+        if value28:IsA("Model") or value28:IsA("BasePart") then
+          if f42(value28) then
+            if f41(value28) then
+              local primaryPart = value28.PrimaryPart
+
+              local findFirstChildWhichIsA2 = primaryPart
+
+              findFirstChildWhichIsA2 = primaryPart
+                or value28:FindFirstChildWhichIsA("BasePart", true)
+
+              if findFirstChildWhichIsA2 then
+                local magnitude = (humanoidRootPart5.Position - findFirstChildWhichIsA2.Position).Magnitude
+
+                if magnitude < huge then
+                  huge = magnitude
+                  v43 = value28
+                end
+              end
+            end
+          end
+        end
+      end
+
+      return v43
+    end
+  end
+end
+
+function f42(p26)
+  local light = p26:FindFirstChild("Light")
+
+  if not light or not light:IsA("BasePart") then
+    return false
+  else
+    local color4 = light.Color
+    return color4.R > 0.9 and color4.G < 0.1 and color4.B < 0.1
+  end
+end
+
+local function f44()
+  while autoPanel do
+    pcall(function()
+      local v44 = f43()
+
+      if v44 then
+        local v45 = f41(v44)
+
+        if v45 then
+          local v46 = f40(v44, v45)
+
+          if v46 then
+            fireclickdetector(v46)
+            task.wait(0.15)
+          end
+        end
+      else
+        task.wait(0.15)
+      end
+
+      task.wait(0.15)
+    end)
+  end
+end
+
+automaticallyTab:CreateToggle({
+  Name = "Auto Releasep Panel",
+  CurrentValue = false,
+  Callback = function(value29)
+    autoPanel = value29
+
+    if value29 then
+      task.spawn(f44)
+    end
+  end,
+})
+
+local v47 = { Value = false }
+
+local function f45()
+  local fuseBox = workspace:FindFirstChild("FuseBox")
+
+  if not fuseBox then
+    return
+  else
+    local wires = fuseBox:FindFirstChild("Wires")
+
+    if not wires then
+      return
+    else
+      local v48 = false
+
+      while v47.Value do
+        for index10, value30 in ipairs(wires:GetChildren()) do
+          local v49 = value30
+
+          if not v47.Value then
+            break
+          else
+            local sparkles = v49:FindFirstChild("Sparkles")
+
+            if sparkles and sparkles:IsA("ParticleEmitter") and sparkles.Enabled and not v48 then
+              pcall(function() replicatedStorage.Remotes.ClickWire:FireServer(v49) end)
+              task.wait(0.5)
+              v48 = false
+            end
+          end
+        end
+
+        task.wait(0.5)
+      end
+
+      return
+    end
+  end
+end
+
+automaticallyTab:CreateToggle({
+  Name = "Anti Wire Strike",
+  CurrentValue = false,
+  Callback = function(value31)
+    v47.Value = value31
+
+    if value31 then
+      task.spawn(f45)
+    end
+  end,
+})
+
+local function f46()
+  local character8 = localPlayer.Character
+  local humanoidRootPart6 = character8 and character8:FindFirstChild("HumanoidRootPart")
+
+  if not humanoidRootPart6 then
+    return
+  else
+    local cframe = humanoidRootPart6.CFrame
+    local cframe2 = CFrame.new(-319.491577, 79.3999481, 97.856781)
+    local cframe3 = CFrame.new(-271.853912, 79.3999481, 112.114212)
+    humanoidRootPart6.CFrame = cframe2
+    task.wait(0.5)
+    pcall(function() fireclickdetector(workspace.PowerCell.ClickDetector) end)
+    humanoidRootPart6.CFrame = cframe3
+    task.wait(0.5)
+    pcall(function() fireclickdetector(workspace.Generator.Detector.ClickDetector) end)
+    humanoidRootPart6.CFrame = cframe
+    return
+  end
+end
+
+automaticallyTab:CreateButton({ Name = "Fuel Power", Callback = function() task.spawn(f46) end })
+local delivery = replicatedStorage:WaitForChild("Remotes"):WaitForChild("Delivery")
+local buyItems = "None"
+
+automaticallyTab:CreateDropdown({
+  Name = "Buy Items",
+  Options = { "Camera", "Lock", "UVLight", "MotionSensor", "None" },
+  CurrentOption = { "None" },
+  MultipleOptions = false,
+  Flag = "BuyItems",
+  Callback = function(value32)
+    if type(value32) == "table" then
+      buyItems = value32[1] or "None"
+    else
+      buyItems = value32
+    end
+  end,
+})
+
+automaticallyTab:CreateButton({
+  Name = "Buy Selected Items",
+  Callback = function()
+    if buyItems == "None" then
+      return
+    end
+
+    pcall(function() delivery:FireServer(buyItems) end)
+  end,
+})
