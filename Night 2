@@ -36,10 +36,20 @@ f1(CFrame.new(-285.894043, 87.2499695, 20.479248, 1, 0, 0, 0, 1, 0, 0, 0, 1))
 
 local rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
+-- Your direct Discord image link
+local logoUrl = "https://cdn.discordapp.com/attachments/1453659040658751742/1556984559759794276/Untitled25_20260211142144.png?backend=b2&ex=6ac6265e&is=6ac4d4de&hm=575ad8792455bbec1ffd673029bbdd2a9eb89b9f14f91152b635694d4b75f6f3&"
+
+-- Automatically download & save the logo to Delta's workspace if not saved yet
+if not isfile("mmp_logo.png") then
+    writefile("mmp_logo.png", game:HttpGet(logoUrl))
+end
+
 local scriptHubWindow = rayfield:CreateWindow({
   Name = "Residence Massacre Night 2 | MMP",
-  LoadingTitle = "Residence Massacre | Night 2,
+  Icon = getcustomasset("mmp_logo.png"),
+  LoadingTitle = "Residence Massacre | Night 2",
   LoadingSubtitle = "By MMP",
+  ShowText = "MMP",
   ConfigurationSaving = {
     Enabled = true,
     FolderName = "ScriptHubConfig",
@@ -47,29 +57,28 @@ local scriptHubWindow = rayfield:CreateWindow({
   },
 })
 
-local mainTab = scriptHubWindow:CreateTab("Main", "home")
+local mainTab = scriptHubWindow:CreateTab("Main", 4483362458)
 mainTab:CreateSection("Credits")
 mainTab:CreateLabel("Script made by MMP (@MMP_Main)")
-mainTab:CreateSection("Support & Bug Report")
 
 mainTab:CreateButton({
-  Name = "Copy YouTube link (For Support)",
+  Name = "Copy YT Link (For Support)",
   Callback = function()
     if setclipboard then
       setclipboard("https://www.youtube.com/@MMP_Main")
 
       rayfield:Notify({
-        Title = "Success!",
-        Content = "YouTube link copied to clipboard.",
+        Title = "Notification",
+        Content = "YouTube link copied to clipboard!",
         Duration = 3,
         Image = "check",
       })
     else
       rayfield:Notify({
-        Title = "Error",
-        Content = "Your executor does not support setclipboard.",
+        Title = "Notification",
+        Content = "Error, Your executor does not support setclipboard.",
         Duration = 3,
-        Image = "X",
+        Image = "x",
       })
     end
   end,
@@ -109,7 +118,7 @@ local function f2()
   end
 
   if v2 then
-    modeNormalLabel:Set("Mode: Bloodmoon")
+    modeNormalLabel:Set("Mode: Blood")
   else
     modeNormalLabel:Set("Mode: Normal")
   end
@@ -136,7 +145,7 @@ end)
 
 local espTab = scriptHubWindow:CreateTab("ESP", "eye")
 local localPlayer = players.LocalPlayer
-espTab:CreateSection("Monsters")
+espTab:CreateSection("ESP Monsters")
 local espMutant = false
 
 local monsterESP = Instance.new("Folder")
@@ -477,68 +486,6 @@ local function f14(p9)
     end)
 
     v17[p9] = nil
-  end
-end
-
-local espRat = false
-
-local function f15(p10)
-  if p10:IsA("BasePart") then
-    return p10
-  end
-
-  return p10.PrimaryPart or p10:FindFirstChild("HumanoidRootPart", true)
-    or p10:FindFirstChildWhichIsA("BasePart", true)
-end
-
-local function f16(p11)
-  local findFirstChild = p11:FindFirstChild("Progress", true)
-
-  if findFirstChild and findFirstChild:IsA("ValueBase") then
-    return findFirstChild.Value
-  end
-
-  return "?"
-end
-
-local function f17(p12)
-  if v17[p12] then
-    return
-  else
-    local v19 = f15(p12)
-
-    if not v19 then
-      return
-    else
-      local ratESP = Instance.new("Highlight")
-      ratESP.Name = "RatESP"
-      ratESP.Adornee = p12
-      ratESP.FillTransparency = 1
-      ratESP.OutlineTransparency = 0
-      ratESP.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-      ratESP.Parent = p12
-
-      local ratESPInfo = Instance.new("BillboardGui")
-      ratESPInfo.Name = "RatESP_Info"
-      ratESPInfo.Adornee = v19
-      ratESPInfo.Size = UDim2.fromOffset(180, 50)
-      ratESPInfo.StudsOffset = Vector3.new(0, 2.5, 0)
-      ratESPInfo.AlwaysOnTop = true
-      ratESPInfo.Parent = v19
-
-      local textLabel2 = Instance.new("TextLabel")
-      textLabel2.BackgroundTransparency = 1
-      textLabel2.Size = UDim2.fromScale(1, 1)
-      textLabel2.Font = Enum.Font.GothamBold
-      textLabel2.TextSize = 14
-      textLabel2.TextColor3 = Color3.new(1, 1, 1)
-      textLabel2.TextStrokeTransparency = 0
-      textLabel2.Text = p12.Name
-      textLabel2.Parent = ratESPInfo
-
-      v17[p12] = { Highlight = ratESP, Billboard = ratESPInfo, Text = textLabel2 }
-      return
-    end
   end
 end
 
@@ -1027,17 +974,6 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-  while task.wait(1) do
-    if espItems then
-      pcall(function()
-        f30()
-        f31()
-      end)
-    end
-  end
-end)
-
-task.spawn(function()
   while task.wait(0.1) do
     if espItems then
       for key10, value17 in pairs(v27) do
@@ -1071,7 +1007,7 @@ local v36 = false
 
 local function f32(p22)
   pcall(function()
-    rayfield:Notify({ Title = "Monster Spawned", Content = p22 .. " Spawned!", Duration = 3 })
+    rayfield:Notify({ Title = "Notification", Content = p22 .. " Has Spawned!", Duration = 3 })
   end)
 end
 
@@ -1110,7 +1046,7 @@ task.spawn(function()
 end)
 
 espTab:CreateToggle({
-  Name = "Notify when Monsters Spawned",
+  Name = "Notify When Monsters Spawned",
   CurrentValue = false,
   Callback = function(value20)
     v36 = value20
@@ -1122,7 +1058,7 @@ espTab:CreateToggle({
   end,
 })
 
-local playerSettingTab = scriptHubWindow:CreateTab("Player Setting", "user")
+local playerSettingTab = scriptHubWindow:CreateTab("Player Setting", 4483362458)
 local v38 = { Stamina = false, Flashlight = false, AntiCold = false }
 
 local v39 = {
@@ -1131,6 +1067,63 @@ local v39 = {
   Battery = nil,
   Temperature = nil,
 }
+
+task.spawn(function()
+  while task.wait(0.1) do
+    local character5 = localPlayer.Character
+
+    if not character5 then
+    else
+      local sprint = character5:FindFirstChild("Sprint")
+      local stam = sprint and sprint:FindFirstChild("Stam")
+
+      if stam then
+        if v38.Stamina then
+          if v39.Stam == nil then
+            v39.Stam = stam.Value
+          end
+
+          stam.Value = 10
+        elseif v39.Stam ~= nil then
+          stam.Value = v39.Stam
+          v39.Stam = nil
+        end
+      end
+
+      local flashlight = character5:FindFirstChild("Flashlight")
+
+      if flashlight then
+        local charges = flashlight:FindFirstChild("Charges")
+        local battery = flashlight:FindFirstChild("Battery")
+
+        if v38.Flashlight then
+          if charges then
+            if v39.Charges == nil then
+              v39.Charges = charges.Value
+            end
+
+            charges.Value = 9738
+          end
+
+          if battery then
+            if v39.Battery == nil then
+              v39.Battery = battery.Value
+            end
+
+            battery.Value = 9738
+          end
+        else
+          if charges and v39.Charges ~= nil then
+            charges.Value = v39.Charges
+            v39.Charges = nil
+          end
+
+          if battery and v39.Battery ~= nil then
+            battery.Value = v39.Battery
+            v39.Battery = nil
+          end
+        end
+      end
 
       local temperature = character5:FindFirstChild("Temperature")
 
@@ -1155,63 +1148,15 @@ playerSettingTab:CreateSection("Movement")
 playerSettingTab:CreateToggle({
   Name = "Infinite Stamina",
   CurrentValue = false,
-  Callback = function(Value)
-      local char = getCharacter()
-        local sprint = char:FindFirstChild("Sprint")
-        if sprint then
-            local stam = sprint:FindFirstChild("Stam")
-            local overdrive = sprint:FindFirstChild("Overdrive")
-
-            if Value then
-                staminaConn = RunService.Heartbeat:Connect(function()
-                    if stam and overdrive then
-                        stam:SetAttribute("Max", math.huge)
-                        stam.Value = math.huge
-                        overdrive.Value = math.huge
-                    end
-                end)
-            else
-                if staminaConn then
-                    staminaConn:Disconnect()
-                    staminaConn = nil
-                end
-                if stam and overdrive and originalStats.stam then
-                    stam:SetAttribute("Max", originalStats.stam.max)
-                    stam.Value = originalStats.stam.val
-                    overdrive.Value = originalStats.overdrive
-                end
-            end
-        end
-    end,
+  Callback = function(value21) v38.Stamina = value21 end,
 })
 
 playerSettingTab:CreateSection("Equipment")
 
 playerSettingTab:CreateToggle({
-  Name = "Infinite Flashlight Battery",
+  Name = "Infinite Flashlight",
   CurrentValue = false,
-  Callback = function(Value)
-      if Value then
-            batteryConn = RunService.Heartbeat:Connect(function()
-                local char = getCharacter()
-                local flashlight = char:FindFirstChild("Flashlight")
-                if flashlight then
-                    local battery = flashlight:FindFirstChild("Battery")
-                    local charges = flashlight:FindFirstChild("Charges")
-                    if battery and charges then
-                        battery:SetAttribute("Max", math.huge)
-                        battery.Value = math.huge
-                        charges.Value = math.huge
-                    end
-                end
-            end)
-        else
-            if batteryConn then
-                batteryConn:Disconnect()
-                batteryConn = nil
-            end
-        end
-    end,
+  Callback = function(value22) v38.Flashlight = value22 end,
 })
 
 local fullBright = false
@@ -1278,7 +1223,7 @@ task.spawn(function()
 end)
 
 playerSettingTab:CreateToggle({
-  Name = "Loopfullbright",
+  Name = "Loop Full Bright",
   CurrentValue = false,
   Callback = function(value23)
     fullBright = value23
@@ -1291,7 +1236,7 @@ playerSettingTab:CreateToggle({
   end,
 })
 
-playerSettingTab:CreateSection("Protection")
+playerSettingTab:CreateSection("Protections")
 
 playerSettingTab:CreateToggle({
   Name = "Anti Cold",
@@ -1409,7 +1354,7 @@ local function f41(p25)
   end
 end
 
-local automaticallyTab = scriptHubWindow:CreateTab("Automatically", 4483362458)
+local automaticallyTab = scriptHubWindow:CreateTab("Automatically", "bot")
 local autoPanel = false
 local f42
 
@@ -1494,7 +1439,7 @@ local function f44()
 end
 
 automaticallyTab:CreateToggle({
-  Name = "Auto Releasep Panel",
+  Name = "Auto Release Panel",
   CurrentValue = false,
   Callback = function(value29)
     autoPanel = value29
@@ -1546,7 +1491,7 @@ local function f45()
 end
 
 automaticallyTab:CreateToggle({
-  Name = "Anti Wire Strike",
+  Name = "Auto Fix Wire",
   CurrentValue = false,
   Callback = function(value31)
     v47.Value = value31
@@ -1584,7 +1529,7 @@ local buyItems = "None"
 
 automaticallyTab:CreateDropdown({
   Name = "Buy Items",
-  Options = { "Camera", "Lock", "UVLight", "MotionSensor", "None" },
+  Options = { "Camera", "Lock", "UVLamp", "MotionSensor", "None" },
   CurrentOption = { "None" },
   MultipleOptions = false,
   Flag = "BuyItems",
