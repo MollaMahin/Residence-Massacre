@@ -57,7 +57,7 @@ local scriptHubWindow = rayfield:CreateWindow({
   },
 })
 
-local mainTab = scriptHubWindow:CreateTab("Main", 4483362458)
+local mainTab = scriptHubWindow:CreateTab("Main", "home")
 mainTab:CreateSection("Credits")
 mainTab:CreateLabel("Script made by MMP (@MMP_Main)")
 
@@ -1058,7 +1058,7 @@ espTab:CreateToggle({
   end,
 })
 
-local playerSettingTab = scriptHubWindow:CreateTab("Player Setting", 4483362458)
+local playerSettingTab = scriptHubWindow:CreateTab("Player Settings", "user")
 local v38 = { Stamina = false, Flashlight = false, AntiCold = false }
 
 local v39 = {
