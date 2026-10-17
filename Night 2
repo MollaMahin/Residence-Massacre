@@ -1236,6 +1236,22 @@ playerSettingTab:CreateToggle({
   end,
 })
 
+playerSettingTab:CreateSection("Other Utility Script")
+
+playerSettingTab:CreateButton({
+   Name = "Open Infinite Yield",
+   Callback = function()
+       loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+       
+       Rayfield:Notify({
+           Title = "Notification",
+           Content = "Infinite Yield Loaded!",
+           Duration = 3,
+           Image = "chevrons-right",
+       })
+   end,
+})
+
 playerSettingTab:CreateSection("Protections")
 
 playerSettingTab:CreateToggle({
