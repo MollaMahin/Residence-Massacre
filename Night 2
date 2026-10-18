@@ -1507,7 +1507,7 @@ local function f45()
 end
 
 automaticallyTab:CreateToggle({
-  Name = "Auto Fix Wire",
+  Name = "Auto Wire",
   CurrentValue = false,
   Callback = function(value31)
     v47.Value = value31
